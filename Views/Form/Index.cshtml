@@ -1,0 +1,127 @@
+﻿@using Entity.Concrate
+@model List<Form>
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+<a id ="CreateForm" class="ab-c-m"> New Form</a>
+
+
+<table class="table">
+    <thead>
+        <tr>          
+                <th scope="col">#</th>
+                <th scope="col">Form Name</th>
+                <th scope="col">Form Description</th>
+                <th scope="col">Form Creation Date</th>
+                <th scope="col">Form Creator Id</th>
+                <th scope="col">Respond</th>           
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+            {
+        <tr>
+            
+                <td scope="row">@item.FormId</td>
+                <td>@item.FormName</td>
+                <td>@item.Description</td>
+                <td>@item.CreationDate</td>
+                <td>@item.User.UserId</td>
+                <td><a href="/Form/Show?Id=@item.FormId" id="showform" class="btn btn-outline-warning">Respond</a></td>
+            
+        </tr>
+            }
+    </tbody>
+</table>
+
+<div class="modal fade" id="formModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">New message</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="create-form">
+                    <div class="mb-3">
+                        <label for="recipient-name" class="col-form-label">Name:</label>
+                        <input id="FormName" type="text" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label for="message-text" class="col-form-label">Description:</label>
+                        <textarea id="FormDescription" class="form-control"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="recipient-name" class="col-form-label">Ad:</label>
+                        <input id="field-QuestionText-name" type="text" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label for="recipient-name" class="col-form-label">Soyad:</label>
+                        <input id="field-QuestionText-surname" type="text" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label for="recipient-name" class="col-form-label">Yaş:</label>
+                        <input id="field-QuestionText-age" type="number" class="form-control">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" id="create-form-dynamic" class="btn btn-primary">Create Form</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+        var button = document.getElementById("showform");
+
+
+    var button = document.getElementById("CreateForm");
+
+    button.addEventListener("click", function () {
+
+        $('#formModal').modal('show');
+        var buttonCreateForm = document.getElementById("create-form-dynamic");
+
+        buttonCreateForm.addEventListener("click", function () {
+
+            var formname = document.getElementById("FormName").value;
+            var FormDescription = document.getElementById("FormDescription").value;
+
+            if ((formname == null || formname == "") || (FormDescription == null || FormDescription == "")) {
+                window.alert("Form ismi ve açıklama alanını doldurunuz")
+            }
+            else {
+                var questinos = [
+                    {
+                        "QuestionText": "Name",
+                        "FieldType": "STRING",
+                        "IsRequired": true,
+                    },
+                    {
+                        "QuestionText": "Surname",
+                        "FieldType": "STRING",
+                        "IsRequired": true,
+                    },
+                    {
+                        "QuestionText": "Age",
+                        "FieldType": "NUMBER",
+                        "IsRequired": false
+                    }];
+
+                $.ajax({
+                    url: '/Form/Addform', //this is the submit URL
+                    type: 'POST', //or POST
+                    data: { "FormName": formname, "Description": FormDescription, "Questions": questinos },
+                    success: function (data) {
+                        alert('Form başarıyla Kaydedildi.')
+                    }
+                });
+            }
+        });
+    });
+
+</script>
